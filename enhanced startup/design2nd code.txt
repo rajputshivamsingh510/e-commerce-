@@ -1,0 +1,678 @@
+    <script>
+        // Design state
+// Design state - single declaration
+let designState = {
+    tshirtColor: '#000000',
+    size: 'M',
+    text: '',
+    textStyle: {
+        fontFamily: 'Poppins',
+        fontSize: 24,
+        color: '#ffffff',
+        bold: false,
+        italic: false,
+        underline: false
+    },
+    images: [],
+    layers: ['T-Shirt Base'],
+    currentView: 'front',
+    is3D: false,
+    history: [],
+    historyIndex: -1
+};
+
+let scene, camera, renderer, tshirtMesh;
+let uploadedImages = [];
+
+// Initialize the design studio
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDesignStudio();
+    setupEventListeners();
+    loadUserSession();
+});
+
+function initializeDesignStudio() {
+    // Initialize 3D scene only if Three.js is available
+    if (typeof THREE !== 'undefined') {
+        init3DScene();
+    }
+    
+    // Set initial design state
+    updateDesignPreview();
+    
+    // Load saved designs if any
+    loadSavedDesigns();
+}
+
+function setupEventListeners() {
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey) {
+            switch(e.key) {
+                case 'z':
+                    e.preventDefault();
+                    undoAction();
+                    break;
+                case 'y':
+                    e.preventDefault();
+                    redoAction();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    saveDesign();
+                    break;
+            }
+        }
+    });
+}
+
+// T-Shirt Color Functions
+function changeTshirtColor(color) {
+    // Remove active class from all color options
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach(el => el.classList.remove('active'));
+    
+    // Add active class to selected color
+    const selectedOption = document.querySelector(`[style*="${color}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('active');
+    }
+    
+    designState.tshirtColor = color;
+    
+    // Update CSS custom property
+    document.documentElement.style.setProperty('--tshirt-color', color);
+    
+    // Update specific element if it exists
+    const tshirtShape = document.getElementById('tshirt-shape');
+    if (tshirtShape) {
+        tshirtShape.style.setProperty('--tshirt-color', color);
+    }
+    
+    // Update 3D model color if in 3D mode and Three.js is available
+    if (designState.is3D && tshirtMesh && typeof THREE !== 'undefined') {
+        tshirtMesh.material.color.setHex(color.replace('#', '0x'));
+    }
+    
+    addToHistory('Color changed to ' + color);
+    updateDesignPreview();
+}
+
+// Size Selection
+function selectSize(size, element) {
+    const sizeOptions = document.querySelectorAll('.size-option');
+    sizeOptions.forEach(el => el.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+    
+    designState.size = size;
+    addToHistory('Size changed to ' + size);
+}
+
+// Text Functions
+function updateDesignText() {
+    const textInput = document.getElementById('text-input');
+    if (!textInput) return;
+    
+    designState.text = textInput.value;
+    
+    const designContent = document.getElementById('design-content');
+    if (!designContent) return;
+    
+    if (designState.text.trim() === '') {
+        designContent.textContent = 'Your Design Here';
+        designContent.style.opacity = '0.5';
+    } else {
+        designContent.textContent = designState.text;
+        designContent.style.opacity = '1';
+    }
+    
+    updateTextStyle();
+    addToHistory('Text updated');
+}
+
+function updateTextStyle() {
+    const designContent = document.getElementById('design-content');
+    if (!designContent) return;
+    
+    const fontFamilyEl = document.getElementById('font-family');
+    const fontSizeEl = document.getElementById('font-size');
+    const textColorEl = document.getElementById('text-color');
+    
+    if (fontFamilyEl) designState.textStyle.fontFamily = fontFamilyEl.value;
+    if (fontSizeEl) designState.textStyle.fontSize = fontSizeEl.value;
+    if (textColorEl) designState.textStyle.color = textColorEl.value;
+    
+    let fontWeight = designState.textStyle.bold ? 'bold' : 'normal';
+    let fontStyle = designState.textStyle.italic ? 'italic' : 'normal';
+    let textDecoration = designState.textStyle.underline ? 'underline' : 'none';
+    
+    designContent.style.fontFamily = designState.textStyle.fontFamily;
+    designContent.style.fontSize = designState.textStyle.fontSize + 'px';
+    designContent.style.color = designState.textStyle.color;
+    designContent.style.fontWeight = fontWeight;
+    designContent.style.fontStyle = fontStyle;
+    designContent.style.textDecoration = textDecoration;
+    
+    addToHistory('Text style updated');
+}
+
+function toggleBold() {
+    const btn = document.getElementById('bold-btn');
+    designState.textStyle.bold = !designState.textStyle.bold;
+    if (btn) btn.classList.toggle('active', designState.textStyle.bold);
+    updateTextStyle();
+}
+
+function toggleItalic() {
+    const btn = document.getElementById('italic-btn');
+    designState.textStyle.italic = !designState.textStyle.italic;
+    if (btn) btn.classList.toggle('active', designState.textStyle.italic);
+    updateTextStyle();
+}
+
+function toggleUnderline() {
+    const btn = document.getElementById('underline-btn');
+    designState.textStyle.underline = !designState.textStyle.underline;
+    if (btn) btn.classList.toggle('active', designState.textStyle.underline);
+    updateTextStyle();
+}
+
+// Image Upload Functions
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imageData = {
+            id: Date.now(),
+            src: e.target.result,
+            name: file.name
+        };
+        
+        uploadedImages.push(imageData);
+        displayUploadedImages();
+        addToHistory('Image uploaded: ' + file.name);
+    };
+    
+    reader.onerror = function() {
+        alert('Error reading file. Please try again.');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function displayUploadedImages() {
+    const container = document.getElementById('uploaded-images');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    uploadedImages.forEach(image => {
+        const img = document.createElement('img');
+        img.src = image.src;
+        img.className = 'uploaded-image';
+        img.onclick = () => selectImage(image);
+        container.appendChild(img);
+    });
+}
+
+function selectImage(imageData) {
+    // Remove previous image selection
+    const uploadedImgs = document.querySelectorAll('.uploaded-image');
+    uploadedImgs.forEach(img => img.classList.remove('selected'));
+    
+    // Add selected class to clicked image
+    const clickedImg = event.target;
+    if (clickedImg) {
+        clickedImg.classList.add('selected');
+    }
+    
+    // Add image to design area
+    const designArea = document.getElementById('design-area');
+    if (!designArea) return;
+    
+    const existingImg = designArea.querySelector('img');
+    if (existingImg) {
+        existingImg.remove();
+    }
+    
+    const img = document.createElement('img');
+    img.src = imageData.src;
+    img.style.maxWidth = '80%';
+    img.style.maxHeight = '80%';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
+    
+    designArea.appendChild(img);
+    addToHistory('Image added to design');
+}
+
+// Template Functions
+function applyTemplate(templateType) {
+    const designContent = document.getElementById('design-content');
+    const textInput = document.getElementById('text-input');
+    
+    if (!designContent || !textInput) return;
+    
+    switch(templateType) {
+        case 'vintage':
+            textInput.value = 'VINTAGE STYLE';
+            designState.textStyle.fontFamily = 'Georgia';
+            designState.textStyle.fontSize = 32;
+            designState.textStyle.color = '#f39c12';
+            changeTshirtColor('#2c3e50');
+            break;
+            
+        case 'modern':
+            textInput.value = 'MODERN';
+            designState.textStyle.fontFamily = 'Arial';
+            designState.textStyle.fontSize = 36;
+            designState.textStyle.color = '#ffffff';
+            designState.textStyle.bold = true;
+            changeTshirtColor('#000000');
+            break;
+            
+        case 'minimal':
+            textInput.value = 'MINIMAL';
+            designState.textStyle.fontFamily = 'Poppins';
+            designState.textStyle.fontSize = 24;
+            designState.textStyle.color = '#2c3e50';
+            changeTshirtColor('#ffffff');
+            break;
+            
+        case 'badge':
+            textInput.value = '★ BADGE ★';
+            designState.textStyle.fontFamily = 'Impact';
+            designState.textStyle.fontSize = 28;
+            designState.textStyle.color = '#fff';
+            changeTshirtColor('#e74c3c');
+            break;
+    }
+    
+    updateDesignText();
+    updateFormControls();
+    addToHistory('Template applied: ' + templateType);
+}
+
+function updateFormControls() {
+    const fontFamilyEl = document.getElementById('font-family');
+    const fontSizeEl = document.getElementById('font-size');
+    const textColorEl = document.getElementById('text-color');
+    const boldBtn = document.getElementById('bold-btn');
+    const italicBtn = document.getElementById('italic-btn');
+    const underlineBtn = document.getElementById('underline-btn');
+    
+    if (fontFamilyEl) fontFamilyEl.value = designState.textStyle.fontFamily;
+    if (fontSizeEl) fontSizeEl.value = designState.textStyle.fontSize;
+    if (textColorEl) textColorEl.value = designState.textStyle.color;
+    if (boldBtn) boldBtn.classList.toggle('active', designState.textStyle.bold);
+    if (italicBtn) italicBtn.classList.toggle('active', designState.textStyle.italic);
+    if (underlineBtn) underlineBtn.classList.toggle('active', designState.textStyle.underline);
+}
+
+// View Controls
+function changeView(view, element) {
+    const viewBtns = document.querySelectorAll('.view-btn');
+    viewBtns.forEach(btn => btn.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+    
+    designState.currentView = view;
+    
+    // Add visual feedback for different views
+    const tshirtShape = document.getElementById('tshirt-shape');
+    if (tshirtShape) {
+        if (view === 'back') {
+            tshirtShape.style.transform = 'scaleX(-1)';
+        } else {
+            tshirtShape.style.transform = 'scaleX(1)';
+        }
+    }
+}
+
+function toggle3D() {
+    if (typeof THREE === 'undefined') {
+        alert('Three.js library is required for 3D view.');
+        return;
+    }
+    
+    designState.is3D = !designState.is3D;
+    
+    const canvas2D = document.getElementById('tshirt-2d');
+    const canvas3D = document.getElementById('tshirt-3d');
+    
+    if (canvas2D && canvas3D) {
+        if (designState.is3D) {
+            canvas2D.style.display = 'none';
+            canvas3D.style.display = 'block';
+            init3DScene();
+            animate3D();
+        } else {
+            canvas2D.style.display = 'block';
+            canvas3D.style.display = 'none';
+        }
+    }
+}
+
+// 3D Scene Functions
+function init3DScene() {
+    if (typeof THREE === 'undefined') return;
+    
+    const canvas = document.getElementById('threejs-canvas');
+    if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    if (!container) return;
+    
+    // Scene setup
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+    
+    // Camera setup
+    camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+    camera.position.z = 5;
+    
+    // Renderer setup
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Create T-shirt geometry (simplified)
+    const geometry = new THREE.BoxGeometry(2, 2.5, 0.1);
+    const material = new THREE.MeshPhongMaterial({ 
+        color: designState.tshirtColor,
+        transparent: true,
+        opacity: 0.9
+    });
+    
+    tshirtMesh = new THREE.Mesh(geometry, material);
+    tshirtMesh.position.set(0, 0, 0);
+    scene.add(tshirtMesh);
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 10, 5);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    
+    // Mouse controls for 3D rotation
+    let mouseDown = false;
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    canvas.addEventListener('mousedown', (e) => {
+        mouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        mouseDown = false;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!mouseDown) return;
+        
+        const deltaX = e.clientX - mouseX;
+        const deltaY = e.clientY - mouseY;
+        
+        if (tshirtMesh) {
+            tshirtMesh.rotation.y += deltaX * 0.01;
+            tshirtMesh.rotation.x += deltaY * 0.01;
+        }
+        
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+}
+
+function animate3D() {
+    if (!designState.is3D || typeof THREE === 'undefined') return;
+    
+    requestAnimationFrame(animate3D);
+    
+    // Gentle rotation when not being controlled
+    if (tshirtMesh) {
+        tshirtMesh.rotation.y += 0.005;
+    }
+    
+    if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+    }
+}
+
+// History Management
+function addToHistory(action) {
+    designState.history = designState.history.slice(0, designState.historyIndex + 1);
+    designState.history.push({
+        action: action,
+        state: JSON.parse(JSON.stringify(designState)),
+        timestamp: Date.now()
+    });
+    designState.historyIndex++;
+    
+    // Limit history to 50 actions
+    if (designState.history.length > 50) {
+        designState.history.shift();
+        designState.historyIndex--;
+    }
+}
+
+function undoAction() {
+    if (designState.historyIndex > 0) {
+        designState.historyIndex--;
+        const previousState = designState.history[designState.historyIndex].state;
+        restoreDesignState(previousState);
+    }
+}
+
+function redoAction() {
+    if (designState.historyIndex < designState.history.length - 1) {
+        designState.historyIndex++;
+        const nextState = designState.history[designState.historyIndex].state;
+        restoreDesignState(nextState);
+    }
+}
+
+function restoreDesignState(state) {
+    designState = { ...designState, ...state };
+    updateDesignPreview();
+    updateFormControls();
+}
+
+// Design Management
+function updateDesignPreview() {
+    // Update all visual elements based on current design state
+    changeTshirtColor(designState.tshirtColor);
+    updateDesignText();
+    updateTextStyle();
+}
+
+function clearDesign() {
+    if (confirm('Are you sure you want to clear the current design?')) {
+        // Reset design state
+        designState.text = '';
+        designState.textStyle = {
+            fontFamily: 'Poppins',
+            fontSize: 24,
+            color: '#ffffff',
+            bold: false,
+            italic: false,
+            underline: false
+        };
+        
+        // Clear form inputs
+        const textInput = document.getElementById('text-input');
+        if (textInput) textInput.value = '';
+        
+        // Clear design area
+        const designArea = document.getElementById('design-area');
+        const designContent = document.getElementById('design-content');
+        
+        if (designContent) {
+            designContent.textContent = 'Your Design Here';
+            designContent.style.opacity = '0.5';
+        }
+        
+        // Remove any uploaded images from design
+        if (designArea) {
+            const existingImg = designArea.querySelector('img');
+            if (existingImg) {
+                existingImg.remove();
+            }
+        }
+        
+        updateFormControls();
+        addToHistory('Design cleared');
+    }
+}
+
+function saveDesign() {
+    try {
+        const designData = {
+            id: Date.now(),
+            name: prompt('Enter a name for your design:') || 'Untitled Design',
+            state: designState,
+            thumbnail: generateThumbnail(),
+            created: new Date().toISOString()
+        };
+        
+        // Save to browser storage (in a real app, this would be saved to a server)
+        const savedDesigns = JSON.parse(localStorage.getItem('tshirtDesigns') || '[]');
+        savedDesigns.push(designData);
+        localStorage.setItem('tshirtDesigns', JSON.stringify(savedDesigns));
+        
+        alert('Design saved successfully!');
+    } catch (error) {
+        console.error('Error saving design:', error);
+        alert('Error saving design. Please try again.');
+    }
+}
+
+function generateThumbnail() {
+    // In a real implementation, this would capture the current design as an image
+    return 'data:image/svg+xml;base64,' + btoa(`
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="${designState.tshirtColor}"/>
+            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" fill="${designState.textStyle.color}" font-size="12">
+                ${designState.text || 'Design'}
+            </text>
+        </svg>
+    `);
+}
+
+function loadSavedDesigns() {
+    try {
+        // Load previously saved designs (placeholder for future implementation)
+        const savedDesigns = JSON.parse(localStorage.getItem('tshirtDesigns') || '[]');
+        console.log('Loaded saved designs:', savedDesigns);
+    } catch (error) {
+        console.error('Error loading saved designs:', error);
+    }
+}
+
+// Cart Functions
+function addToCart() {
+    try {
+        const cartItem = {
+            id: Date.now(),
+            type: 'custom-tshirt',
+            design: { ...designState },
+            price: 19.99,
+            quantity: 1,
+            size: designState.size,
+            color: designState.tshirtColor
+        };
+        
+        // Get existing cart
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push(cartItem);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart counter
+        updateCartCounter();
+        
+        alert('Design added to cart!');
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Error adding to cart. Please try again.');
+    }
+}
+
+function updateCartCounter() {
+    try {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const counter = document.getElementById('cart-count');
+        
+        if (counter) {
+            if (cart.length > 0) {
+                counter.textContent = cart.length;
+                counter.style.display = 'inline';
+            } else {
+                counter.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart counter:', error);
+    }
+}
+
+function openCart() {
+    window.location.href = 'cart.html';
+}
+
+// User Session Management
+function loadUserSession() {
+    try {
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        const authBtn = document.getElementById('auth-btn');
+        
+        if (user && authBtn) {
+            authBtn.textContent = user.name;
+            authBtn.href = '#';
+            authBtn.onclick = () => {
+                if (confirm('Do you want to logout?')) {
+                    localStorage.removeItem('currentUser');
+                    location.reload();
+                }
+            };
+        }
+        
+        // Update cart counter
+        updateCartCounter();
+    } catch (error) {
+        console.error('Error loading user session:', error);
+    }
+}
+
+// Window resize handler for 3D canvas
+window.addEventListener('resize', function() {
+    if (designState.is3D && renderer && camera && typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('threejs-canvas');
+        if (canvas) {
+            const container = canvas.parentElement;
+            if (container) {
+                camera.aspect = container.offsetWidth / container.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.offsetWidth, container.offsetHeight);
+            }
+        }
+    }
+});
+</script>

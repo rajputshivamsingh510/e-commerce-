@@ -1,0 +1,1429 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - TshirtCraft</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Admin Header */
+        .admin-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .admin-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .admin-nav a:hover, .admin-nav a.active {
+            color: white;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Layout */
+        .admin-container {
+            display: flex;
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: #4CAF50;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #4CAF50;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table th {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table td {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Forms */
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            color: white;
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-select option {
+            background: #333;
+            color: white;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+
+        .status-processing {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border: 1px solid #2196f3;
+        }
+
+        .status-shipped {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .status-delivered {
+            background: rgba(139, 195, 74, 0.2);
+            color: #8bc34a;
+            border: 1px solid #8bc34a;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .main-content {
+                order: 1;
+                padding: 1rem;
+            }
+
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .admin-nav {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .content-section.active {
+            animation: slideIn 0.3s ease;
+        }
+
+        /* Search and Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            min-width: 150px;
+        }
+
+        .filter-select option {
+            background: #333;
+            color: white;
+        }
+
+        /* Design Grid */
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .design-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .design-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .design-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .design-info {
+            padding: 1.5rem;
+        }
+
+        .design-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .design-meta {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .settings-title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="admin-logo">
+                <i class="fas fa-tshirt"></i>
+                <span>TshirtCraft Admin</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="index.html">View Site</a>
+                <a href="#" class="active">Dashboard</a>
+            </nav>
+            <div class="admin-user">
+                <span>Welcome, Admin</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="menu-link active" data-section="dashboard">
+                    <i class="fas fa-chart-bar"></i> Dashboard
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="products">
+                    <i class="fas fa-tshirt"></i> Products
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="orders">
+                    <i class="fas fa-shopping-bag"></i> Orders
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="customers">
+                    <i class="fas fa-users"></i> Customers
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="designs">
+                    <i class="fas fa-palette"></i> Designs
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="inventory">
+                    <i class="fas fa-boxes"></i> Inventory
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a></li>
+                <li><a href="#" class="menu-link" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h1 class="section-title">Dashboard Overview</h1>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <span class="stat-number">$15,420</span>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <span class="stat-number">342</span>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="stat-number">1,284</span>
+                        <div class="stat-label">Customers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <span class="stat-number">156</span>
+                        <div class="stat-label">Products</div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-container">
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line" style="font-size: 4rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                        <h3 style="color: rgba(255,255,255,0.6);">Sales Analytics Chart</h3>
+                        <p style="color: rgba(255,255,255,0.4);">Chart visualization would be implemented here</p>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Orders</th>
+                                <th>Total Spent</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>john@example.com</td>
+                                <td>5</td>
+                                <td>$149.95</td>
+                                <td>2025-01-15</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">View</button>
+                                        <button class="btn btn-warning btn-sm">Message</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jane Smith</td>
+                                <td>jane@example.com</td>
+                                <td>3</td>
+                                <td>$89.97</td>
+                                <td>2025-02-20</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">View</button>
+                                        <button class="btn btn-warning btn-sm">Message</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Designs Section -->
+            <section id="designs" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Design Templates</h1>
+                    <button class="btn btn-primary" onclick="openModal('designModal')">
+                        <i class="fas fa-plus"></i> Upload Design
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <input type="text" class="search-input" placeholder="Search designs...">
+                    <select class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="graphics">Graphics</option>
+                        <option value="text">Text</option>
+                        <option value="patterns">Patterns</option>
+                        <option value="logos">Logos</option>
+                    </select>
+                </div>
+
+                <!-- Design Grid -->
+                <div class="design-grid">
+                    <div class="design-card">
+                        <div class="design-image">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="design-info">
+                            <div class="design-title">Vintage Logo Design</div>
+                            <div class="design-meta">Category: Logos • Used: 23 times</div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Edit</button>
+                                <button class="btn btn-warning btn-sm">Preview</button>
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="design-card">
+                        <div class="design-image">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="design-info">
+                            <div class="design-title">Abstract Pattern</div>
+                            <div class="design-meta">Category: Patterns • Used: 12 times</div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Edit</button>
+                                <button class="btn btn-warning btn-sm">Preview</button>
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="design-card">
+                        <div class="design-image">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <div class="design-info">
+                            <div class="design-title">Typography Design</div>
+                            <div class="design-meta">Category: Text • Used: 45 times</div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Edit</button>
+                                <button class="btn btn-warning btn-sm">Preview</button>
+                                <button class="btn btn-danger btn-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section id="inventory" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Inventory Management</h1>
+                    <button class="btn btn-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Low Stock Alert
+                    </button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <span class="stat-number">2,485</span>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle" style="color: #ff9800;"></i>
+                        </div>
+                        <span class="stat-number">23</span>
+                        <div class="stat-label">Low Stock Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle" style="color: #f44336;"></i>
+                        </div>
+                        <span class="stat-number">8</span>
+                        <div class="stat-label">Out of Stock</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <span class="stat-number">$48,230</span>
+                        <div class="stat-label">Inventory Value</div>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <input type="text" class="search-input" placeholder="Search inventory...">
+                    <select class="filter-select">
+                        <option value="">All Sizes</option>
+                        <option value="xs">XS</option>
+                        <option value="s">S</option>
+                        <option value="m">M</option>
+                        <option value="l">L</option>
+                        <option value="xl">XL</option>
+                        <option value="xxl">XXL</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">All Colors</option>
+                        <option value="black">Black</option>
+                        <option value="white">White</option>
+                        <option value="blue">Blue</option>
+                        <option value="red">Red</option>
+                    </select>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Color</th>
+                                <th>Current Stock</th>
+                                <th>Min. Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Classic Black Tee</td>
+                                <td>M</td>
+                                <td>Black</td>
+                                <td>45</td>
+                                <td>20</td>
+                                <td><span class="status-badge status-shipped">In Stock</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Restock</button>
+                                        <button class="btn btn-warning btn-sm">Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Premium White Tee</td>
+                                <td>L</td>
+                                <td>White</td>
+                                <td>8</td>
+                                <td>15</td>
+                                <td><span class="status-badge status-pending">Low Stock</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Restock</button>
+                                        <button class="btn btn-warning btn-sm">Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vintage Blue Tee</td>
+                                <td>S</td>
+                                <td>Blue</td>
+                                <td>0</td>
+                                <td>10</td>
+                                <td><span class="status-badge status-pending">Out of Stock</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Restock</button>
+                                        <button class="btn btn-warning btn-sm">Edit</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">Analytics & Reports</h1>
+                    <div>
+                        <button class="btn btn-success">Export Report</button>
+                        <button class="btn btn-primary">Generate Report</button>
+                    </div>
+                </div>
+
+                <!-- Analytics Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="stat-number">+23%</span>
+                        <div class="stat-label">Sales Growth</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <span class="stat-number">12,450</span>
+                        <div class="stat-label">Page Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <span class="stat-number">3.2%</span>
+                        <div class="stat-label">Conversion Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <span class="stat-number">$45.20</span>
+                        <div class="stat-label">Avg. Order Value</div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="stats-grid">
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-bar" style="font-size: 3rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                            <h4 style="color: rgba(255,255,255,0.6);">Monthly Sales</h4>
+                            <p style="color: rgba(255,255,255,0.4);">Sales data visualization</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie" style="font-size: 3rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                            <h4 style="color: rgba(255,255,255,0.6);">Product Categories</h4>
+                            <p style="color: rgba(255,255,255,0.4);">Category breakdown</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="table-container">
+                    <h3 style="color: white; margin-bottom: 1rem; padding: 0 1rem;">Recent Activity</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>User</th>
+                                <th>Time</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>New Order</td>
+                                <td>John Doe</td>
+                                <td>2 minutes ago</td>
+                                <td>Order #ORD-004 - $24.99</td>
+                            </tr>
+                            <tr>
+                                <td>Product Updated</td>
+                                <td>Admin</td>
+                                <td>15 minutes ago</td>
+                                <td>Classic Black Tee - Price changed</td>
+                            </tr>
+                            <tr>
+                                <td>Customer Registration</td>
+                                <td>Sarah Wilson</td>
+                                <td>1 hour ago</td>
+                                <td>New customer account created</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h1 class="section-title">System Settings</h1>
+                    <button class="btn btn-success">Save All Settings</button>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- General Settings -->
+                    <div class="settings-card">
+                        <h3 class="settings-title">
+                            <i class="fas fa-cog"></i> General Settings
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" class="form-input" value="TshirtCraft" placeholder="Enter site name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Site Description</label>
+                            <textarea class="form-textarea" placeholder="Enter site description">Custom t-shirt printing and design platform</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" class="form-input" value="admin@tshirtcraft.com" placeholder="Enter contact email">
+                        </div>
+                    </div>
+
+                    <!-- Payment Settings -->
+                    <div class="settings-card">
+                        <h3 class="settings-title">
+                            <i class="fas fa-credit-card"></i> Payment Settings
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Currency</label>
+                            <select class="form-select">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tax Rate (%)</label>
+                            <input type="number" class="form-input" value="8.25" placeholder="Enter tax rate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Shipping Fee</label>
+                            <input type="number" class="form-input" value="5.99" placeholder="Enter shipping fee">
+                        </div>
+                    </div>
+
+                    <!-- Notification Settings -->
+                    <div class="settings-card">
+                        <h3 class="settings-title">
+                            <i class="fas fa-bell"></i> Notifications
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" checked style="margin-right: 0.5rem;">
+                                Email notifications for new orders
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" checked style="margin-right: 0.5rem;">
+                                SMS notifications for urgent issues
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" style="margin-right: 0.5rem;">
+                                Weekly sales reports
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="settings-card">
+                        <h3 class="settings-title">
+                            <i class="fas fa-shield-alt"></i> Security
+                        </h3>
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-input" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-input" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" placeholder="Confirm new password">
+                        </div>
+                        <button class="btn btn-warning">Update Password</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Product</h2>
+                <button class="modal-close" onclick="closeModal('productModal')">&times;</button>
+            </div>
+            <form class="form-container" style="margin: 0; padding: 0; background: none; border: none;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" class="form-input" placeholder="Enter product name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select">
+                            <option value="">Select category</option>
+                            <option value="classic">Classic</option>
+                            <option value="premium">Premium</option>
+                            <option value="vintage">Vintage</option>
+                            <option value="organic">Organic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price</label>
+                        <input type="number" class="form-input" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Initial Stock</label>
+                        <input type="number" class="form-input" placeholder="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Enter product description"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal('productModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Design Modal -->
+    <div id="designModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Upload Design</h2>
+                <button class="modal-close" onclick="closeModal('designModal')">&times;</button>
+            </div>
+            <form class="form-container" style="margin: 0; padding: 0; background: none; border: none;">
+                <div class="form-group">
+                    <label class="form-label">Design Name</label>
+                    <input type="text" class="form-input" placeholder="Enter design name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select">
+                        <option value="">Select category</option>
+                        <option value="graphics">Graphics</option>
+                        <option value="text">Text</option>
+                        <option value="patterns">Patterns</option>
+                        <option value="logos">Logos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Design File</label>
+                    <input type="file" class="form-input" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Enter design description"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary">Upload Design</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal('designModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+// Navigation functionality
+function showSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+    
+    // Update menu links
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Add active class to current menu item
+    const activeLink = document.querySelector(`[data-section="${sectionId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+}
+
+// Add click event listeners to menu links
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('data-section');
+            if (sectionId) {
+                showSection(sectionId);
+            }
+        });
+    });
+});
+
+// Modal functionality
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    });
+});
+
+// Logout functionality
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        // In a real application, this would handle the logout process
+        alert('Logged out successfully');
+        // Redirect to login page
+        // window.location.href = 'login.html';
+    }
+}
+
+// Form submission handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Product form submission
+    const productForm = document.querySelector('#productModal form');
+    if (productForm) {
+        productForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Product added successfully!');
+            closeModal('productModal');
+            // In a real application, this would send data to the server
+        });
+    }
+
+    // Design form submission
+    const designForm = document.querySelector('#designModal form');
+    if (designForm) {
+        designForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Design uploaded successfully!');
+            closeModal('designModal');
+            // In a real application, this would send data to the server
+        });
+    }
+
+    // Search functionality
+    document.querySelectorAll('.search-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const section = this.closest('.content-section');
+            if (section) {
+                const table = section.querySelector('.table tbody');
+                
+                if (table) {
+                    Array.from(table.rows).forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                }
+            }
+        });
+    });
+
+    // Filter functionality
+    document.querySelectorAll('.filter-select').forEach(select => {
+        select.addEventListener('change', function() {
+            // Basic filter functionality - would be enhanced in a real application
+            console.log('Filter changed:', this.value);
+        });
+    });
+
+    // Initialize stats and set update interval
+    updateStats();
+    setInterval(updateStats, 30000); // Update every 30 seconds
+});
+
+// Fixed: Simulate real-time stat updates
+function updateStats() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        if (stat.textContent.includes('$')) {
+            // Simulate revenue changes
+            const currentValue = parseFloat(stat.textContent.replace(/[$,]/g, ''));
+            if (!isNaN(currentValue)) {
+                const newValue = currentValue + (Math.random() * 100 - 50);
+                stat.textContent = '$' + newValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        } else if (!stat.textContent.includes('%')) {
+            // Simulate count changes
+            const currentValue = parseInt(stat.textContent.replace(/,/g, ''));
+            if (!isNaN(currentValue)) {
+                const change = Math.floor(Math.random() * 5 - 2);
+                const newValue = Math.max(0, currentValue + change);
+                stat.textContent = newValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        }
+    });
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+            case '1':
+                e.preventDefault();
+                showSection('dashboard');
+                break;
+            case '2':
+                e.preventDefault();
+                showSection('products');
+                break;
+            case '3':
+                e.preventDefault();
+                showSection('orders');
+                break;
+            case '4':
+                e.preventDefault();
+                showSection('customers');
+                break;
+        }
+    }
+    
+    // Close modals with Escape key
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+});
+
+// Add loading states for buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (this.textContent.includes('Export') || this.textContent.includes('Generate')) {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    alert('Action completed successfully!');
+                }, 2000);
+            }
+        });
+    });
+});
+    </script>
+</body>
+</html>
+             

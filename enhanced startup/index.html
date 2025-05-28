@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TshirtCraft - Premium Custom Apparel Design Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Global Navigation -->
+<header class="global-header">
+    <div class="nav-container">
+        <div class="logo">
+            <a href="index.html">TshirtCraft</a>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="design.html">Design</a>
+            <a href="cart.html">Cart</a>
+        </nav>
+        <div class="user-actions">
+            <a href="auth.html" class="auth-btn" id="auth-btn">Login</a>
+            <div class="user-menu" id="user-menu" style="display: none;">
+                <a href="profile.html">Profile</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
+    <!-- Floating Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Enhanced Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <div class="logo">TshirtCraft</div>
+            <nav class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="shop.html" class="nav-link">Shop</a></li>
+                <li><a href="design.html" class="nav-link">Design</a></li>
+                <li><a href="#features" class="nav-link">Features</a></li>
+                <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </nav>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn btn-outline" data-action="open-cart">
+                    <i class="fas fa-shopping-cart"></i> 
+                    Cart
+                    <span class="cart-counter" style="display: none;">0</span>
+                </button>
+                <div class="get-started-wrapper">
+                <a href="auth.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Design. Create. Inspire.</h1>
+                <p class="hero-subtitle">
+                    Transform your ideas into stunning custom apparel with our AI-powered design studio. 
+                    Experience the future of fashion creation with real-time 3D preview, collaborative tools, 
+                    and unlimited creative possibilities.
+                </p>
+                <div class="hero-cta">
+                    <a href="design.html" class="btn-hero btn-glass">
+                        <i class="fas fa-palette"></i> Start Designing
+                    </a>
+                    <button class="btn-hero btn-glass" 
+                            data-action="add-to-cart" 
+                            data-product-id="hero-premium"
+                            data-product="Premium Hero T-Shirt" 
+                            data-price="34.99"
+                            data-size="M"
+                            data-color="#000000"
+                            data-image="images/premium-tshirt.jpg">
+                        <i class="fas fa-shopping-cart"></i> Order Now
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50000</span>
+                        <span class="stat-label">Designs Created</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15000</span>
+                        <span class="stat-label">Happy Customers</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">99</span>
+                        <span class="stat-label">Satisfaction Rate</span>
+                    </div>
+                </div>
+                
+                <!-- Trust Badges -->
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Payment</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-truck"></i>
+                        <span>Free Shipping</span>
+                    </div>
+                    <div class="trust-badge">
+                        <i class="fas fa-medal"></i>
+                        <span>Premium Quality</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="tshirt-3d-container">
+                    <!-- <div class="tshirt-model">
+                        <i class="fas fa-tshirt"></i>
+                    </div> -->
+                    <div class="tshirt-model">
+                    </div>
+                </div>
+                <div class="floating-elements">
+                    <div class="floating-icon"><i class="fas fa-palette"></i></div>
+                    <div class="floating-icon"><i class="fas fa-magic"></i></div>
+                    <div class="floating-icon"><i class="fas fa-heart"></i></div>
+                    <div class="floating-icon"><i class="fas fa-star"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Discover our most popular custom designs</p>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img src="images/BLACK.png" alt="Classic Black T-Shirt" loading="lazy">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                        <div class="thumbnails">
+                            <img src="images/BLACK.png" alt="Black" class="thumbnail active">
+                            <img src="images/WHITE.png" alt="White" class="thumbnail">
+                            <img src="images/BLUE.png" alt="Navy" class="thumbnail">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Classic Cotton Tee</h3>
+                        <p class="product-price">$24.99</p>
+                        <button class="btn btn-primary" 
+                                data-action="add-to-cart"
+                                data-product-id="classic-tee"
+                                data-product="Classic Cotton Tee"
+                                data-price="24.99"
+                                data-size="M"
+                                data-color="#000000"
+                                data-image="images/classic-tee-black.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img src="images/vintage-tee-heather.jpg" alt="Vintage Heather T-Shirt" loading="lazy">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                        <div class="thumbnails">
+                            <img src="images/vintage-tee-heather.jpg" alt="Heather" class="thumbnail active">
+                            <img src="images/vintage-tee-gray.jpg" alt="Gray" class="thumbnail">
+                            <img src="images/vintage-tee-blue.jpg" alt="Blue" class="thumbnail">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Vintage Tri-Blend</h3>
+                        <p class="product-price">$29.99</p>
+                        <button class="btn btn-primary" 
+                                data-action="add-to-cart"
+                                data-product-id="vintage-blend"
+                                data-product="Vintage Tri-Blend Tee"
+                                data-price="29.99"
+                                data-size="M"
+                                data-color="#8B7355"
+                                data-image="images/vintage-tee-heather.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img src="images/premium-organic.jpg" alt="Premium Organic T-Shirt" loading="lazy">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                        <div class="thumbnails">
+                            <img src="images/premium-organic.jpg" alt="Natural" class="thumbnail active">
+                            <img src="images/premium-organic-green.jpg" alt="Green" class="thumbnail">
+                            <img src="images/premium-organic-earth.jpg" alt="Earth" class="thumbnail">
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Organic Premium</h3>
+                        <p class="product-price">$39.99</p>
+                        <button class="btn btn-primary" 
+                                data-action="add-to-cart"
+                                data-product-id="organic-premium"
+                                data-product="Organic Premium Tee"
+                                data-price="39.99"
+                                data-size="M"
+                                data-color="#F5F5DC"
+                                data-image="images/premium-organic.jpg">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Preview -->
+    <section class="features-preview" id="features">
+        <div class="features-container">
+            <h2 class="section-title">Revolutionary Features</h2>
+            <p class="section-subtitle">Experience the next generation of custom apparel design</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3 class="feature-title">3D Design Preview</h3>
+                    <p class="feature-description">
+                        See your designs come to life with real-time 3D rendering and realistic fabric simulation.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">AI Design Assistant</h3>
+                    <p class="feature-description">
+                        Get intelligent design suggestions and automatic color matching powered by advanced AI.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Collaborative Design</h3>
+                    <p class="feature-description">
+                        Work together with friends or team members in real-time collaborative design sessions.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3 class="feature-title">Virtual Try-On</h3>
+                    <p class="feature-description">
+                        Use your camera to see how your designs look on you with AR technology.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+   
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"I designed matching t-shirts for our family reunion, and they were a huge hit! The quality was excellent, and the design tool was so easy to use."</p>
+                    <div class="testimonial-author">
+                        <img src="images/W1.jpg" alt="Customer Avatar" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Happy Customer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"As a small business owner, I needed custom shirts for my team. The quality exceeded my expectations, and the price was very reasonable!"</p>
+                    <div class="testimonial-author">
+                        <img src="images/W2.jpg" alt="Customer Avatar" class="author-avatar">
+                        <div class="author-info">
+                            <h4>Michael Rodriguez</h4>
+                            <p>Business Owner</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"I ordered custom shirts for my bachelor party, and they arrived right on time. Everyone loved their shirts, and the customer service was fantastic!"</p>
+                    <div class="testimonial-author">
+                        <img src="images/M2.jpg" alt="Customer Avatar" class="author-avatar">
+                        <div class="author-info">
+                            <h4>David Thompson</h4>
+                            <p>Repeat Customer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        How long does shipping take?
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Standard shipping takes 3-5 business days within the US. Express shipping (1-2 business days) is available for an additional fee. International shipping typically takes 7-14 business days.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        What is your return policy?
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>We offer a 30-day return policy for unworn, unwashed items with original tags. Custom designed items cannot be returned unless there's a quality issue with the product itself.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        What materials are the t-shirts made from?
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Our premium t-shirts are made from 100% ring-spun cotton, providing superior comfort and durability. We also offer tri-blend options (cotton, polyester, and rayon) for a softer, more vintage feel.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        Can I order in bulk for my team or event?
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Absolutely! We offer bulk discounts starting at 10+ shirts. For larger orders, please contact our customer service team for custom quotes and additional options for team or event orders.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        How do I care for my custom t-shirt?
+                        <span class="accordion-icon">+</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p>For best results, wash your custom t-shirt inside out in cold water and tumble dry on low heat. Avoid using bleach or harsh detergents, as they can damage the print and fabric over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Badges Section -->
+    <section class="security-section">
+        <div class="container">
+            <div class="security-badges">
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>SSL Secured</span>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Secure Payment</span>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Privacy Protected</span>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-award"></i>
+                    <span>Quality Guaranteed</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>TshirtCraft</h3>
+                    <p>Create custom t-shirts and apparel for any occasion. Express yourself with our easy-to-use design tool and premium quality materials.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#testimonials">Reviews</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Customer Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive updates on new products and special promotions.</p>
+                    <form>
+                        <input type="email" placeholder="Your Email Address" required>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 TshirtCraft. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enhanced Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content cart-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-cart"></i> Shopping Cart</h3>
+                <button id="close-cart" class="modal-close">&times;</button>
+            </div>
+            
+            <div class="cart-body">
+                <div class="cart-items-container">
+                    <div class="empty-cart-message">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Your cart is empty</p>
+                        <p class="empty-cart-subtitle">Start designing to add items!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-summary">
+                    <div class="cart-total-row">
+                        <span>Subtotal:</span>
+                        <span class="cart-total">$0.00</span>
+                    </div>
+                    <div class="cart-total-row">
+                        <span>Shipping:</span>
+                        <span class="shipping-cost">FREE</span>
+                    </div>
+                    <div class="cart-total-row total-row">
+                        <span>Total:</span>
+                        <span class="cart-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button id="continue-shopping" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </button>
+                    <button id="checkout" class="btn btn-primary">
+                        <i class="fas fa-credit-card"></i> Secure Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

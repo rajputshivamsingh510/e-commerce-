@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Studio - TshirtCraft</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Global Header */
+        .global-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .main-nav a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover, .main-nav a.active {
+            color: white;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Design Studio Layout */
+        .design-studio {
+            margin-top: 80px;
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .design-sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-content {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        /* Canvas Area */
+        .design-canvas {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .canvas-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .canvas-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .canvas-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .canvas-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* T-Shirt Preview */
+        .tshirt-preview {
+            width: 400px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tshirt-shape {
+            width: 100%;
+            height: 100%;
+            background: var(--tshirt-color, #000000);
+            clip-path: polygon(
+                15% 0%, 85% 0%,
+                90% 5%, 95% 10%,
+                100% 15%, 100% 100%,
+                0% 100%, 0% 15%,
+                5% 10%, 10% 5%
+            );
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .design-area {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 50%;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .design-content {
+            text-align: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Color Picker */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-option:hover,
+        .color-option.active {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .custom-color-input {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        /* Text Tools */
+        .text-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .text-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .font-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .control-input {
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .font-style-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .style-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .style-btn:hover,
+        .style-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Image Upload */
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .uploaded-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .uploaded-image {
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .uploaded-image:hover,
+        .uploaded-image.selected {
+            border-color: white;
+        }
+
+        /* Templates */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .template-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .template-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .template-icon {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-name {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 1;
+        }
+
+        /* View Controls */
+        .view-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover,
+        .view-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Size Selector */
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+        }
+
+        .size-option {
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .size-option:hover,
+        .size-option.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        /* Layers Panel */
+        .layers-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .layer-item:hover,
+        .layer-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .layer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .layer-icon {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .layer-name {
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .layer-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .layer-action {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .layer-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .design-studio {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .design-sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+            }
+
+            .tshirt-preview {
+                width: 300px;
+                height: 375px;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .main-nav {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .design-sidebar {
+            animation: slideIn 0.5s ease;
+        }
+
+        .tshirt-preview {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Scrollbar Styling */
+        .design-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .design-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .design-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .design-sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Global Header -->
+    <header class="global-header">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">TshirtCraft</a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="design.html" class="active">Design</a>
+                <a href="cart.html">Cart</a>
+            </nav>
+            <div class="user-actions">
+                <button class="btn" onclick="saveDesign()">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button class="btn" onclick="openCart()">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span id="cart-count" class="cart-counter" style="display: none;">0</span>
+                </button>
+                <a href="auth.html" class="btn" id="auth-btn">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Design Studio -->
+    <div class="design-studio">
+        <!-- Sidebar -->
+        <aside class="design-sidebar">
+            <!-- T-Shirt Base -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-tshirt"></i>
+                    T-Shirt Base
+                </h3>
+                <div class="section-content">
+                    <div class="control-group">
+                        <label class="control-label">Color</label>
+                        <div class="color-grid">
+                            <div class="color-option active" style="background: #000000" onclick="changeTshirtColor('#000000')"></div>
+                            <div class="color-option" style="background: #ffffff; border: 1px solid #ccc" onclick="changeTshirtColor('#ffffff')"></div>
+                            <div class="color-option" style="background: #ff4757" onclick="changeTshirtColor('#ff4757')"></div>
+                            <div class="color-option" style="background: #2ed573" onclick="changeTshirtColor('#2ed573')"></div>
+                            <div class="color-option" style="background: #1e90ff" onclick="changeTshirtColor('#1e90ff')"></div>
+                            <div class="color-option" style="background: #ffa502" onclick="changeTshirtColor('#ffa502')"></div>
+                            <div class="color-option" style="background: #8b7355" onclick="changeTshirtColor('#8b7355')"></div>
+                            <div class="color-option" style="background: #6c5ce7" onclick="changeTshirtColor('#6c5ce7')"></div>
+                            <div class="color-option" style="background: #fd79a8" onclick="changeTshirtColor('#fd79a8')"></div>
+                            <div class="color-option" style="background: #636e72" onclick="changeTshirtColor('#636e72')"></div>
+                            <div class="color-option" style="background: #00b894" onclick="changeTshirtColor('#00b894')"></div>
+                            <div class="color-option" style="background: #fdcb6e" onclick="changeTshirtColor('#fdcb6e')"></div>
+                        </div>
+                        <input type="color" class="custom-color-input" onchange="changeTshirtColor(this.value)" value="#000000">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Size</label>
+                        <div class="size-grid">
+                            <div class="size-option" onclick="selectSize('XS')">XS</div>
+                            <div class="size-option active" onclick="selectSize('S')">S</div>
+                            <div class="size-option" onclick="selectSize('M')">M</div>
+                            <div class="size-option" onclick="selectSize('L')">L</div>
+                            <div class="size-option" onclick="selectSize('XL')">XL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Tools -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-font"></i>
+                    Add Text
+                </h3>
+                <div class="section-content">
+                    <input type="text" class="text-input" placeholder="Enter your text..." id="text-input" oninput="updateDesignText()">
+                    
+                    <div class="font-controls">
+                        <div class="control-group">
+                            <label class="control-label">Font</label>
+                            <select class="control-input" id="font-family" onchange="updateTextStyle()">
+                                <option value="Poppins">Poppins</option>
+                                <option value="Arial">Arial</option>
+                                <option value="Impact">Impact</option>
+                                <option value="Times New Roman">Times</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Courier New">Courier</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Size</label>
+                            <input type="range" class="control-input" min="12" max="72" value="24" id="font-size" oninput="updateTextStyle()">
+                        </div>
+                    </div>
+                    
+                    <div class="font-style-buttons">
+                        <button class="style-btn" id="bold-btn" onclick="toggleBold()"><i class="fas fa-bold"></i></button>
+                        <button class="style-btn" id="italic-btn" onclick="toggleItalic()"><i class="fas fa-italic"></i></button>
+                        <button class="style-btn" id="underline-btn" onclick="toggleUnderline()"><i class="fas fa-underline"></i></button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Text Color</label>
+                        <input type="color" class="custom-color-input" id="text-color" onchange="updateTextStyle()" value="#ffffff">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-image"></i>
+                    Add Images
+                </h3>
+                <div class="section-content">
+                    <div class="upload-area" onclick="document.getElementById('image-upload').click()">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Click to upload image</div>
+                    </div>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none" onchange="handleImageUpload(event)">
+                    
+                    <div class="uploaded-images" id="uploaded-images">
+                        <!-- Uploaded images will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-magic"></i>
+                    Quick Templates
+                </h3>
+                <div class="section-content">
+                    <div class="template-grid">
+                        <div class="template-card" onclick="applyTemplate('vintage')">
+                            <div class="template-icon"><i class="fas fa-star"></i></div>
+                            <div class="template-name">Vintage</div>
+                        </div>
+                        <div class="template-card" onclick="applyTemplate('modern')">
+                            <div class="template-icon"><i class="fas fa-rocket"></i></div>
+                            <div class="template-name">Modern</div>
+                        </div>
+                        <div class="template-card" onclick="applyTemplate('minimal')">
+                            <div class="template-icon"><i class="fas fa-circle"></i></div>
+                            <div class="template-name">Minimal</div>
+                        </div>
+                        <div class="template-card" onclick="applyTemplate('badge')">
+                            <div class="template-icon"><i class="fas fa-award"></i></div>
+                            <div class="template-name">Badge</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layers -->
+            <div class="sidebar-section">
+                <h3 class="section-title">
+                    <i class="fas fa-layer-group"></i>
+                    Layers
+                </h3>
+                <div class="section-content">
+                    <div class="layers-list" id="layers-list">
+                        <div class="layer-item active">
+                            <div class="layer-info">
+                                <i class="fas fa-tshirt layer-icon"></i>
+                                <span class="layer-name">T-Shirt Base</span>
+                            </div>
+                            <div class="layer-actions">
+                                <button class="layer-action"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="clearDesign()">
+                    <i class="fas fa-eraser"></i> Clear
+                </button>
+                <button class="btn btn-primary" onclick="addToCart()">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+            </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <main class="design-canvas">
+            <div class="canvas-header">
+                <h2 class="canvas-title">Design Preview</h2>
+                <div class="canvas-actions">
+                    <button class="btn" onclick="undoAction()">
+                        <i class="fas fa-undo"></i> Undo
+                    </button>
+                    <button class="btn" onclick="redoAction()">
+                        <i class="fas fa-redo"></i> Redo
+                    </button>
+                </div>
+            </div>
+
+            <div class="canvas-main">
+                <!-- T-Shirt Preview -->
+                <div class="tshirt-preview">
+                    <div class="tshirt-shape" id="tshirt-shape">
+                        <div class="design-area" id="design-area">
+                            <div class="design-content" id="design-content">
+                                Your Design Here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Controls -->
+                <div class="view-controls">
+                    <button class="view-btn active" onclick="changeView('front')" title="Front View">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="view-btn" onclick="changeView('back')" title="Back View">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                    <button class="view-btn" onclick="toggle3D()" title="3D View">
+                        <i class="fas fa-cube"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Design state
+// Design state - single declaration
+let designState = {
+    tshirtColor: '#000000',
+    size: 'M',
+    text: '',
+    textStyle: {
+        fontFamily: 'Poppins',
+        fontSize: 24,
+        color: '#ffffff',
+        bold: false,
+        italic: false,
+        underline: false
+    },
+    images: [],
+    layers: ['T-Shirt Base'],
+    currentView: 'front',
+    is3D: false,
+    history: [],
+    historyIndex: -1
+};
+
+let scene, camera, renderer, tshirtMesh;
+let uploadedImages = [];
+
+// Initialize the design studio
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDesignStudio();
+    setupEventListeners();
+    loadUserSession();
+});
+
+function initializeDesignStudio() {
+    // Initialize 3D scene only if Three.js is available
+    if (typeof THREE !== 'undefined') {
+        init3DScene();
+    }
+    
+    // Set initial design state
+    updateDesignPreview();
+    
+    // Load saved designs if any
+    loadSavedDesigns();
+}
+
+function setupEventListeners() {
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey) {
+            switch(e.key) {
+                case 'z':
+                    e.preventDefault();
+                    undoAction();
+                    break;
+                case 'y':
+                    e.preventDefault();
+                    redoAction();
+                    break;
+                case 's':
+                    e.preventDefault();
+                    saveDesign();
+                    break;
+            }
+        }
+    });
+}
+
+// T-Shirt Color Functions
+function changeTshirtColor(color) {
+    // Remove active class from all color options
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach(el => el.classList.remove('active'));
+    
+    // Add active class to selected color
+    const selectedOption = document.querySelector(`[style*="${color}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('active');
+    }
+    
+    designState.tshirtColor = color;
+    
+    // Update CSS custom property
+    document.documentElement.style.setProperty('--tshirt-color', color);
+    
+    // Update specific element if it exists
+    const tshirtShape = document.getElementById('tshirt-shape');
+    if (tshirtShape) {
+        tshirtShape.style.setProperty('--tshirt-color', color);
+    }
+    
+    // Update 3D model color if in 3D mode and Three.js is available
+    if (designState.is3D && tshirtMesh && typeof THREE !== 'undefined') {
+        tshirtMesh.material.color.setHex(color.replace('#', '0x'));
+    }
+    
+    addToHistory('Color changed to ' + color);
+    updateDesignPreview();
+}
+
+// Size Selection
+function selectSize(size, element) {
+    const sizeOptions = document.querySelectorAll('.size-option');
+    sizeOptions.forEach(el => el.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+    
+    designState.size = size;
+    addToHistory('Size changed to ' + size);
+}
+
+// Text Functions
+function updateDesignText() {
+    const textInput = document.getElementById('text-input');
+    if (!textInput) return;
+    
+    designState.text = textInput.value;
+    
+    const designContent = document.getElementById('design-content');
+    if (!designContent) return;
+    
+    if (designState.text.trim() === '') {
+        designContent.textContent = 'Your Design Here';
+        designContent.style.opacity = '0.5';
+    } else {
+        designContent.textContent = designState.text;
+        designContent.style.opacity = '1';
+    }
+    
+    updateTextStyle();
+    addToHistory('Text updated');
+}
+
+function updateTextStyle() {
+    const designContent = document.getElementById('design-content');
+    if (!designContent) return;
+    
+    const fontFamilyEl = document.getElementById('font-family');
+    const fontSizeEl = document.getElementById('font-size');
+    const textColorEl = document.getElementById('text-color');
+    
+    if (fontFamilyEl) designState.textStyle.fontFamily = fontFamilyEl.value;
+    if (fontSizeEl) designState.textStyle.fontSize = fontSizeEl.value;
+    if (textColorEl) designState.textStyle.color = textColorEl.value;
+    
+    let fontWeight = designState.textStyle.bold ? 'bold' : 'normal';
+    let fontStyle = designState.textStyle.italic ? 'italic' : 'normal';
+    let textDecoration = designState.textStyle.underline ? 'underline' : 'none';
+    
+    designContent.style.fontFamily = designState.textStyle.fontFamily;
+    designContent.style.fontSize = designState.textStyle.fontSize + 'px';
+    designContent.style.color = designState.textStyle.color;
+    designContent.style.fontWeight = fontWeight;
+    designContent.style.fontStyle = fontStyle;
+    designContent.style.textDecoration = textDecoration;
+    
+    addToHistory('Text style updated');
+}
+
+function toggleBold() {
+    const btn = document.getElementById('bold-btn');
+    designState.textStyle.bold = !designState.textStyle.bold;
+    if (btn) btn.classList.toggle('active', designState.textStyle.bold);
+    updateTextStyle();
+}
+
+function toggleItalic() {
+    const btn = document.getElementById('italic-btn');
+    designState.textStyle.italic = !designState.textStyle.italic;
+    if (btn) btn.classList.toggle('active', designState.textStyle.italic);
+    updateTextStyle();
+}
+
+function toggleUnderline() {
+    const btn = document.getElementById('underline-btn');
+    designState.textStyle.underline = !designState.textStyle.underline;
+    if (btn) btn.classList.toggle('active', designState.textStyle.underline);
+    updateTextStyle();
+}
+
+// Image Upload Functions
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imageData = {
+            id: Date.now(),
+            src: e.target.result,
+            name: file.name
+        };
+        
+        uploadedImages.push(imageData);
+        displayUploadedImages();
+        addToHistory('Image uploaded: ' + file.name);
+    };
+    
+    reader.onerror = function() {
+        alert('Error reading file. Please try again.');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function displayUploadedImages() {
+    const container = document.getElementById('uploaded-images');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    uploadedImages.forEach(image => {
+        const img = document.createElement('img');
+        img.src = image.src;
+        img.className = 'uploaded-image';
+        img.onclick = () => selectImage(image);
+        container.appendChild(img);
+    });
+}
+
+function selectImage(imageData) {
+    // Remove previous image selection
+    const uploadedImgs = document.querySelectorAll('.uploaded-image');
+    uploadedImgs.forEach(img => img.classList.remove('selected'));
+    
+    // Add selected class to clicked image
+    const clickedImg = event.target;
+    if (clickedImg) {
+        clickedImg.classList.add('selected');
+    }
+    
+    // Add image to design area
+    const designArea = document.getElementById('design-area');
+    if (!designArea) return;
+    
+    const existingImg = designArea.querySelector('img');
+    if (existingImg) {
+        existingImg.remove();
+    }
+    
+    const img = document.createElement('img');
+    img.src = imageData.src;
+    img.style.maxWidth = '80%';
+    img.style.maxHeight = '80%';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
+    
+    designArea.appendChild(img);
+    addToHistory('Image added to design');
+}
+
+// Template Functions
+function applyTemplate(templateType) {
+    const designContent = document.getElementById('design-content');
+    const textInput = document.getElementById('text-input');
+    
+    if (!designContent || !textInput) return;
+    
+    switch(templateType) {
+        case 'vintage':
+            textInput.value = 'VINTAGE STYLE';
+            designState.textStyle.fontFamily = 'Georgia';
+            designState.textStyle.fontSize = 32;
+            designState.textStyle.color = '#f39c12';
+            changeTshirtColor('#2c3e50');
+            break;
+            
+        case 'modern':
+            textInput.value = 'MODERN';
+            designState.textStyle.fontFamily = 'Arial';
+            designState.textStyle.fontSize = 36;
+            designState.textStyle.color = '#ffffff';
+            designState.textStyle.bold = true;
+            changeTshirtColor('#000000');
+            break;
+            
+        case 'minimal':
+            textInput.value = 'MINIMAL';
+            designState.textStyle.fontFamily = 'Poppins';
+            designState.textStyle.fontSize = 24;
+            designState.textStyle.color = '#2c3e50';
+            changeTshirtColor('#ffffff');
+            break;
+            
+        case 'badge':
+            textInput.value = '★ BADGE ★';
+            designState.textStyle.fontFamily = 'Impact';
+            designState.textStyle.fontSize = 28;
+            designState.textStyle.color = '#fff';
+            changeTshirtColor('#e74c3c');
+            break;
+    }
+    
+    updateDesignText();
+    updateFormControls();
+    addToHistory('Template applied: ' + templateType);
+}
+
+function updateFormControls() {
+    const fontFamilyEl = document.getElementById('font-family');
+    const fontSizeEl = document.getElementById('font-size');
+    const textColorEl = document.getElementById('text-color');
+    const boldBtn = document.getElementById('bold-btn');
+    const italicBtn = document.getElementById('italic-btn');
+    const underlineBtn = document.getElementById('underline-btn');
+    
+    if (fontFamilyEl) fontFamilyEl.value = designState.textStyle.fontFamily;
+    if (fontSizeEl) fontSizeEl.value = designState.textStyle.fontSize;
+    if (textColorEl) textColorEl.value = designState.textStyle.color;
+    if (boldBtn) boldBtn.classList.toggle('active', designState.textStyle.bold);
+    if (italicBtn) italicBtn.classList.toggle('active', designState.textStyle.italic);
+    if (underlineBtn) underlineBtn.classList.toggle('active', designState.textStyle.underline);
+}
+
+// View Controls
+function changeView(view, element) {
+    const viewBtns = document.querySelectorAll('.view-btn');
+    viewBtns.forEach(btn => btn.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+    
+    designState.currentView = view;
+    
+    // Add visual feedback for different views
+    const tshirtShape = document.getElementById('tshirt-shape');
+    if (tshirtShape) {
+        if (view === 'back') {
+            tshirtShape.style.transform = 'scaleX(-1)';
+        } else {
+            tshirtShape.style.transform = 'scaleX(1)';
+        }
+    }
+}
+
+function toggle3D() {
+    if (typeof THREE === 'undefined') {
+        alert('Three.js library is required for 3D view.');
+        return;
+    }
+    
+    designState.is3D = !designState.is3D;
+    
+    const canvas2D = document.getElementById('tshirt-2d');
+    const canvas3D = document.getElementById('tshirt-3d');
+    
+    if (canvas2D && canvas3D) {
+        if (designState.is3D) {
+            canvas2D.style.display = 'none';
+            canvas3D.style.display = 'block';
+            init3DScene();
+            animate3D();
+        } else {
+            canvas2D.style.display = 'block';
+            canvas3D.style.display = 'none';
+        }
+    }
+}
+
+// 3D Scene Functions
+function init3DScene() {
+    if (typeof THREE === 'undefined') return;
+    
+    const canvas = document.getElementById('threejs-canvas');
+    if (!canvas) return;
+    
+    const container = canvas.parentElement;
+    if (!container) return;
+    
+    // Scene setup
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+    
+    // Camera setup
+    camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+    camera.position.z = 5;
+    
+    // Renderer setup
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Create T-shirt geometry (simplified)
+    const geometry = new THREE.BoxGeometry(2, 2.5, 0.1);
+    const material = new THREE.MeshPhongMaterial({ 
+        color: designState.tshirtColor,
+        transparent: true,
+        opacity: 0.9
+    });
+    
+    tshirtMesh = new THREE.Mesh(geometry, material);
+    tshirtMesh.position.set(0, 0, 0);
+    scene.add(tshirtMesh);
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 10, 5);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    
+    // Mouse controls for 3D rotation
+    let mouseDown = false;
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    canvas.addEventListener('mousedown', (e) => {
+        mouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+    
+    canvas.addEventListener('mouseup', () => {
+        mouseDown = false;
+    });
+    
+    canvas.addEventListener('mousemove', (e) => {
+        if (!mouseDown) return;
+        
+        const deltaX = e.clientX - mouseX;
+        const deltaY = e.clientY - mouseY;
+        
+        if (tshirtMesh) {
+            tshirtMesh.rotation.y += deltaX * 0.01;
+            tshirtMesh.rotation.x += deltaY * 0.01;
+        }
+        
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+}
+
+function animate3D() {
+    if (!designState.is3D || typeof THREE === 'undefined') return;
+    
+    requestAnimationFrame(animate3D);
+    
+    // Gentle rotation when not being controlled
+    if (tshirtMesh) {
+        tshirtMesh.rotation.y += 0.005;
+    }
+    
+    if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+    }
+}
+
+// History Management
+function addToHistory(action) {
+    designState.history = designState.history.slice(0, designState.historyIndex + 1);
+    designState.history.push({
+        action: action,
+        state: JSON.parse(JSON.stringify(designState)),
+        timestamp: Date.now()
+    });
+    designState.historyIndex++;
+    
+    // Limit history to 50 actions
+    if (designState.history.length > 50) {
+        designState.history.shift();
+        designState.historyIndex--;
+    }
+}
+
+function undoAction() {
+    if (designState.historyIndex > 0) {
+        designState.historyIndex--;
+        const previousState = designState.history[designState.historyIndex].state;
+        restoreDesignState(previousState);
+    }
+}
+
+function redoAction() {
+    if (designState.historyIndex < designState.history.length - 1) {
+        designState.historyIndex++;
+        const nextState = designState.history[designState.historyIndex].state;
+        restoreDesignState(nextState);
+    }
+}
+
+function restoreDesignState(state) {
+    designState = { ...designState, ...state };
+    updateDesignPreview();
+    updateFormControls();
+}
+
+// Design Management
+function updateDesignPreview() {
+    // Update all visual elements based on current design state
+    changeTshirtColor(designState.tshirtColor);
+    updateDesignText();
+    updateTextStyle();
+}
+
+function clearDesign() {
+    if (confirm('Are you sure you want to clear the current design?')) {
+        // Reset design state
+        designState.text = '';
+        designState.textStyle = {
+            fontFamily: 'Poppins',
+            fontSize: 24,
+            color: '#ffffff',
+            bold: false,
+            italic: false,
+            underline: false
+        };
+        
+        // Clear form inputs
+        const textInput = document.getElementById('text-input');
+        if (textInput) textInput.value = '';
+        
+        // Clear design area
+        const designArea = document.getElementById('design-area');
+        const designContent = document.getElementById('design-content');
+        
+        if (designContent) {
+            designContent.textContent = 'Your Design Here';
+            designContent.style.opacity = '0.5';
+        }
+        
+        // Remove any uploaded images from design
+        if (designArea) {
+            const existingImg = designArea.querySelector('img');
+            if (existingImg) {
+                existingImg.remove();
+            }
+        }
+        
+        updateFormControls();
+        addToHistory('Design cleared');
+    }
+}
+
+function saveDesign() {
+    try {
+        const designData = {
+            id: Date.now(),
+            name: prompt('Enter a name for your design:') || 'Untitled Design',
+            state: designState,
+            thumbnail: generateThumbnail(),
+            created: new Date().toISOString()
+        };
+        
+        // Save to browser storage (in a real app, this would be saved to a server)
+        const savedDesigns = JSON.parse(localStorage.getItem('tshirtDesigns') || '[]');
+        savedDesigns.push(designData);
+        localStorage.setItem('tshirtDesigns', JSON.stringify(savedDesigns));
+        
+        alert('Design saved successfully!');
+    } catch (error) {
+        console.error('Error saving design:', error);
+        alert('Error saving design. Please try again.');
+    }
+}
+
+function generateThumbnail() {
+    // In a real implementation, this would capture the current design as an image
+    return 'data:image/svg+xml;base64,' + btoa(`
+        <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" fill="${designState.tshirtColor}"/>
+            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" fill="${designState.textStyle.color}" font-size="12">
+                ${designState.text || 'Design'}
+            </text>
+        </svg>
+    `);
+}
+
+function loadSavedDesigns() {
+    try {
+        // Load previously saved designs (placeholder for future implementation)
+        const savedDesigns = JSON.parse(localStorage.getItem('tshirtDesigns') || '[]');
+        console.log('Loaded saved designs:', savedDesigns);
+    } catch (error) {
+        console.error('Error loading saved designs:', error);
+    }
+}
+
+// Cart Functions
+function addToCart() {
+    try {
+        const cartItem = {
+            id: Date.now(),
+            type: 'custom-tshirt',
+            design: { ...designState },
+            price: 19.99,
+            quantity: 1,
+            size: designState.size,
+            color: designState.tshirtColor
+        };
+        
+        // Get existing cart
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push(cartItem);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart counter
+        updateCartCounter();
+        
+        alert('Design added to cart!');
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Error adding to cart. Please try again.');
+    }
+}
+
+function updateCartCounter() {
+    try {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const counter = document.getElementById('cart-count');
+        
+        if (counter) {
+            if (cart.length > 0) {
+                counter.textContent = cart.length;
+                counter.style.display = 'inline';
+            } else {
+                counter.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating cart counter:', error);
+    }
+}
+
+function openCart() {
+    window.location.href = 'cart.html';
+}
+
+// User Session Management
+function loadUserSession() {
+    try {
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        const authBtn = document.getElementById('auth-btn');
+        
+        if (user && authBtn) {
+            authBtn.textContent = user.name;
+            authBtn.href = '#';
+            authBtn.onclick = () => {
+                if (confirm('Do you want to logout?')) {
+                    localStorage.removeItem('currentUser');
+                    location.reload();
+                }
+            };
+        }
+        
+        // Update cart counter
+        updateCartCounter();
+    } catch (error) {
+        console.error('Error loading user session:', error);
+    }
+}
+
+// Window resize handler for 3D canvas
+window.addEventListener('resize', function() {
+    if (designState.is3D && renderer && camera && typeof THREE !== 'undefined') {
+        const canvas = document.getElementById('threejs-canvas');
+        if (canvas) {
+            const container = canvas.parentElement;
+            if (container) {
+                camera.aspect = container.offsetWidth / container.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.offsetWidth, container.offsetHeight);
+            }
+        }
+    }
+});
+</script>
+    </body>
+</html>        
